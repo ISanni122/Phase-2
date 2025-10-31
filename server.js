@@ -1,58 +1,34 @@
 const express = require("express");
-const app = express();
-const path = require("path");
-const PORT = 5000;
-const fs = require("fs");
+const server = express();
+const port = 5000; 
+const hostname = "localhost";
 
-app.use(express.json());
+const MovieRoutes = require("./modules/movies/movie-routes");
+const RatingRoutes = require("./modules/ratings/ratings-routes");
 
-const filePath = path.join(__dirname, "data", "movies.json");
-let movies = [];
+server.use(express.json());
 
-try {
-  const data = fs.readFileSync(filePath, "utf8");
-  movies = JSON.parse(data);
-  console.log(`✅ Loaded ${movies.length} movies from dataset`);
-} catch (err) {
-  console.error("Failed to load movies.json:", err);
-}
+// Add route prefixes to avoid conflicts
+server.use("/movies",MovieRoutes);
+server.use("/rating",RatingRoutes);
 
-// Routes
-app.get("/", (req, res) => {
-  res.send("Welcome to Movie Explorer API 🎬");
+// Basic health check route
+server.get("/", (req, res) => {
+  res.send("Welcome to Movie Explorer Server");
 });
 
-// Get all movies
-app.get("/movies", (req, res) => {
-  res.json(movies);
+// Error handling middleware
+server.use((err, req, res, next) => {
+  console.error("Error:", err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
-// Get movie by id
-app.get("/movies/:id", (req, res) => {
-  const movie = movies.find((m) => m.id === parseInt(req.params.id));
-  movie ? res.json(movie) : res.status(404).json({ msg: "Movie not found" });
+// 404 handler
+server.use((req, res, next) => {
+  res.status(404).json({ error: `404! ${req.method} ${req.path} Not Found.` });
 });
 
-// Add a new movie
-app.post("/movies", (req, res) => {
-  const newMovie = { id: movies.length + 1, ...req.body };
-  movies.push(newMovie);
-  res.status(201).json(newMovie);
+server.listen(port, hostname, (error) => {
+  if (error) console.log(error.message);
+  else console.log(`Server running on http://${hostname}:${port}`);
 });
-
-// Update movie
-app.put("/movies/:id", (req, res) => {
-  const movie = movies.find((m) => m.id === parseInt(req.params.id));
-  if (!movie) return res.status(404).json({ msg: "Movie not found" });
-
-  Object.assign(movie, req.body);
-  res.json(movie);
-});
-
-// Delete movie
-app.delete("/movies/:id", (req, res) => {
-  movies = movies.filter((m) => m.id !== parseInt(req.params.id));
-  res.json({ msg: "Movie deleted" });
-});
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
