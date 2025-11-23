@@ -1,0 +1,87 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+nav, header {
+  width: 100%;
+}
+
+header {
+  background-color: var(--secondary);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+main {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#container {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: none;
+}
+
+.movie {
+  background-color: var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.movie h3 {
+  margin-top: 0;
+}
+
+.btn {
+  background-color: var(--primary);
+  color: rgb(0, 61, 228);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-delete {
+  background-color: transparent;
+  color: #e22c2c;
+  border: 1px solid rgba(226,44,44,0.12);
+  padding: 8px 12px;
+}
+
+.btn-delete:hover {
+  background-color: rgba(226,44,44,0.06);
+}
+
+.formContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+}
+
+.inputField {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+}
