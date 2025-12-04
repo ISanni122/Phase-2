@@ -35,7 +35,9 @@ const handleSubmit = async (e) => {
     try {
         const response = await fetch('http://localhost:3000/movies', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 
+                       'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({
                 title: Movietitle,
                 genres: Moviegenre,
@@ -48,10 +50,10 @@ const handleSubmit = async (e) => {
 
         if (response.ok) {
             alert('Movie created successfully!');
-            navigate('/');
+            navigate('/movies');
         } else {
             const text = await response.text();
-            alert('Error creating movie: ' + text);
+            alert('Error creating movie or You do not have permission to create ' + text);
         } 
     } catch (error) {
         console.error('Network error', error);

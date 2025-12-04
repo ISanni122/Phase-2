@@ -12,19 +12,29 @@ function EditMovie() {
     const [MovieOverview, setOverview] = useState('');
     const [MovieBudget, setBudget] = useState('');
     const [MovieRevenue, setRevenue] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    // Load movie on first render
     useEffect(() => {
         async function fetchMovie() {
-            const resp = await fetch(`http://localhost:3000/movies/${id}`);
-            const movie = await resp.json();
+            try {
+                const token = localStorage.getItem("token");
+                const resp = await fetch(`http://localhost:3000/movies/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-            setTitle(movie.title);
-            setGenre(movie.genres.join(", "));
-            setReleaseYear(movie.release_year);
-            setOverview(movie.overview);
-            setBudget(movie.budget);
-            setRevenue(movie.revenue);
+                if (!resp.ok) throw new Error('Failed to fetch movie');
+
+                const movie = await resp.json();
+                setTitle(movie.title);
+                setGenre(movie.genres.join(", "));
+                setReleaseYear(movie.release_year);
+                setOverview(movie.overview);
+                setBudget(movie.budget);
+                setRevenue(movie.revenue);
+                setLoading(false);
+            } catch (err) {
+                alert(err.message);
+            }
         }
 
         fetchMovie();
@@ -44,19 +54,32 @@ function EditMovie() {
             revenue: MovieRevenue ? parseFloat(MovieRevenue) : 0,
         };
 
-        const response = await fetch(`http://localhost:3000/movies/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedMovie),
-        });
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:3000/movies/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(updatedMovie),
+            });
 
-        if (response.ok) {
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || 'Error updating movie or you do not have the permission to create');
+                return;
+            }
+
             alert('Movie updated successfully!');
-            navigate('/');
-        } else {
-            alert('Error updating movie');
+            navigate('/movies');
+        } catch (err) {
+            alert(err.message);
         }
     };
+
+    if (loading) return <p>Loading movie data...</p>;
 
     return (
         <div>

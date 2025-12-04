@@ -13,8 +13,7 @@ function App() {
       <nav style={{ padding: '1rem', background: '#f4f4f4' }}>
         <Link to="/">Register</Link> |   
         <Link to="/login">Login</Link>  |
-                <Link to="/create">Add New Movie</Link>  |
-                <Link to="/movies">Movies</Link>
+
 
       </nav>
 

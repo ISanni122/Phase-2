@@ -1,6 +1,6 @@
 import MovieItem from "./MovieItem";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const ListMovies = () => {
   const navigate = useNavigate();
@@ -91,6 +91,10 @@ const ListMovies = () => {
 
   return (
     <div>
+      <div>
+        <Link to="/create">Add New Movie</Link>
+      </div>
+      
       <div id="container" style={{ display: "grid", gap: "15px", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
         {data.map((movie) => (
           <MovieItem
