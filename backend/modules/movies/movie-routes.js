@@ -1,6 +1,7 @@
 const {Router} = require('express');
 const createMovieRules = require('./middlewares/createMovieRules');
 const updateMovieRules = require('./middlewares/updateMovieRules');
+const authorize = require("../../shared/middlewares/authorize");
 
 const MovieModel = require('./movie-model');
 
@@ -74,7 +75,7 @@ moviesRoute.get("/movies/:id", async (req, res) => {
 });
 
 // POST /movies — create a new movie
-moviesRoute.post("/movies", createMovieRules, async (req, res) => {
+moviesRoute.post("/movies", createMovieRules,authorize(["admin"]),async (req, res) => {
   try {
     const newMovie = req.body;
     // normalize genres into an array
@@ -109,7 +110,7 @@ moviesRoute.post("/movies", createMovieRules, async (req, res) => {
 });
 
 // PUT /movies/:id — update a movie by ID
-moviesRoute.put("/movies/:id", updateMovieRules, async (req, res) => {
+moviesRoute.put("/movies/:id", updateMovieRules,authorize(["admin"]), async (req, res) => {
   try {
     const movieID = req.params.id;
     const newMovie = req.body;
@@ -156,7 +157,7 @@ moviesRoute.put("/movies/:id", updateMovieRules, async (req, res) => {
 });
 
 // DELETE /movies/:id — delete a movie by ID
-moviesRoute.delete("/movies/:id", async (req, res) => {
+moviesRoute.delete("/movies/:id",authorize(["admin"]), async (req, res) => {
   try {
     const movieID = req.params.id;
     const foundMovie = await MovieModel.findById(movieID);

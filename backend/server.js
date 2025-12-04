@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const { moviesRoute } = require("./modules/movies/movie-routes");
 const { ratingsRoute } = require("./modules/ratings/ratings-routes");
+const { usersRoute } = require("./modules/user/users-routes")
 const connectDB = require("./shared/middlewares/connect-db");
 const cors = require('cors');
 
@@ -23,6 +24,7 @@ server.use(connectDB);
 // Mount all the routes
 server.use(moviesRoute);
 server.use(ratingsRoute);
+server.use(usersRoute);
 
 // error-handling middleware to logs the error for debugging.
 server.use((error, req, res, next) => {
