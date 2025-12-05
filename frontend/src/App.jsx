@@ -19,7 +19,6 @@ function App() {
 
       <div style={{ padding: '20px' }}>
         <Routes>
-          {/* 👇 Register is now the default homepage */}
           <Route path="/" element={<Register />} />
 
           <Route path="/movies" element={<ListMovies />} />
