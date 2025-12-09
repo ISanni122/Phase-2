@@ -143,8 +143,11 @@ function EditMovie() {
                         onChange={(e) => setRevenue(e.target.value)}
                     />
                 </div>
-
+                <div>
+                <button type='button' onClick={() => navigate(`/movies`)} className="btn">Back</button>
+                </div>
                 <Button type="submit" className="btn">Update Movie</Button>
+                
             </form>
         </div>
     );

@@ -12,40 +12,39 @@ moviesRoute.get("/movies", async (req, res) => {
     await MovieModel.syncIndexes();
 
     const search = req.query.search || "";
+    const genre = req.query.genre || "";
+    const year = req.query.year || "";
 
-    const count = await MovieModel.countDocuments({
-      $or: [
-        { title: { $regex: search, $options: "i" } },
-        { overview: { $regex: search, $options: "i" } },
-      ],
-    });
+    const query = {};
 
-    if (!count || count <= 0) {
-      return res.send({ count: 0, page: 1, data: [] });
+    // Search by title only
+    if (search) {
+      query.title = { $regex: search.trim(), $options: "i" };
+
+      const debugMatches = await MovieModel.find(
+        { title: { $regex: search.trim(), $options: "i" } },
+        { title: 1 }
+      );
     }
 
-    // sorting
-    const sort_by = req.query.sort_by || "release_year";
-    const sort_order = req.query.sort_order === "asc" ? 1 : -1;
+    // Filter by exact genre
+    if (genre) {
+      query.genres = genre;
+    }
 
-    // pagination
+    // Filter by exact year
+    if (year) {
+      query.release_year = parseInt(year);
+    }
+
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
 
-    const movies = await MovieModel.find(
-      {
-        $or: [
-          { title: { $regex: search, $options: "i" } },
-          { overview: { $regex: search, $options: "i" } },
-        ],
-      },
-      {},
-      {
-        limit,
-        skip: (page - 1) * limit,
-        sort: { [sort_by]: sort_order },
-      }
-    );
+    const count = await MovieModel.countDocuments(query);
+
+    const movies = await MovieModel.find(query)
+      .limit(limit)
+      .skip((page - 1) * limit);
 
     res.json({
       count,
@@ -53,11 +52,13 @@ moviesRoute.get("/movies", async (req, res) => {
       limit,
       data: movies,
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while retrieving movies.");
   }
 });
+
 
 // GET /movies/:id — get a movie by ID
 moviesRoute.get("/movies/:id", async (req, res) => {

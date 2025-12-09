@@ -12,9 +12,13 @@ const ListMovies = () => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const limit = 10;
+
+  const [search, setSearch] = useState("");
+  const [genre, setGenre] = useState("");
+
   const totalPages = Math.ceil(count / limit);
 
-  // Fetch movies with token
+  // Fetch movies
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -30,8 +34,10 @@ const ListMovies = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/movies?page=${page}&limit=${limit}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:3000/movies?page=${page}&limit=${limit}&search=${search}&genre=${genre}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
 
         if (!response.ok) {
@@ -50,7 +56,7 @@ const ListMovies = () => {
     }
 
     fetchData();
-  }, [page, navigate]);
+  }, [page, search, genre, navigate]);
 
   // Delete a movie
   const DeleteMovie = async (id) => {
@@ -70,7 +76,7 @@ const ListMovies = () => {
       });
 
       if (!resp.ok) {
-        throw new Error(`Failed to delete movie (status ${resp.status})`);
+        throw new Error(`Failed to delete movie due to permission (status ${resp.status})`);
       }
 
       setData((prev) => prev.filter((m) => m._id !== id));
@@ -84,24 +90,55 @@ const ListMovies = () => {
   if (loading) return <div style={{ textAlign: "center" }}>Loading...</div>;
   if (error)
     return (
-      <div style={{ textAlign: "center", color: "red" }}>
-        {error}
-      </div>
+      <div style={{ textAlign: "center", color: "red" }}>{error}</div>
     );
 
   return (
     <div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <Link to="/create">Add New Movie</Link>
       </div>
-      
-      <div id="container" style={{ display: "grid", gap: "15px", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
+
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+        <input
+          type="text"
+          placeholder="Search movies..."
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          style={{ padding: "8px", width: "250px" }}
+        />
+
+        <select
+          value={genre}
+          onChange={(e) => {
+            setPage(1);
+            setGenre(e.target.value);
+          }}
+          style={{ padding: "8px" }}
+        >
+          <option value="">All Genres</option>
+          <option value="Action">Action</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Animation">Animation</option>
+          <option value="Romance">Romance</option>
+          <option value="Horror">Horror</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+        </select>
+      </div>
+
+      <div
+        id="container"
+        style={{
+          display: "grid",
+          gap: "15px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+        }}
+      >
         {data.map((movie) => (
-          <MovieItem
-            key={movie._id}
-            movie={movie}
-            DeleteMovie={DeleteMovie}
-          />
+          <MovieItem key={movie._id} movie={movie} DeleteMovie={DeleteMovie} />
         ))}
       </div>
 
@@ -114,7 +151,10 @@ const ListMovies = () => {
           Page {page} of {totalPages || 1}
         </span>
 
-        <button onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
+        <button
+          onClick={() => setPage(page + 1)}
+          disabled={page >= totalPages}
+        >
           Next
         </button>
       </div>

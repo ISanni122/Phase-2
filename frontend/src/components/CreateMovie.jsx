@@ -33,6 +33,7 @@ const handleSubmit = async (e) => {
     }
 
     try {
+        const token = localStorage.getItem("token");
         const response = await fetch('http://localhost:3000/movies', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 
@@ -53,7 +54,7 @@ const handleSubmit = async (e) => {
             navigate('/movies');
         } else {
             const text = await response.text();
-            alert('Error creating movie or You do not have permission to create ' + text);
+            alert('Error creating movie or You do not have permission to create ');
         } 
     } catch (error) {
         console.error('Network error', error);
@@ -88,6 +89,11 @@ const handleSubmit = async (e) => {
                 <div>
                     <label>Revenue:</label>
                     <input type="number" className = "inputField" value={MovieRevenue} onChange={handleRevenueChange} />
+                </div>
+                <div>
+                <button type='button' onClick={() => navigate(`/movies`)} className="btn">
+            Back
+                </button>
                 </div>
                 <Button type="submit" className = "btn" >Create Movie</Button>
             </form>

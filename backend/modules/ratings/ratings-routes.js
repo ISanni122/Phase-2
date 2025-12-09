@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const createRatingRules = require("./middlewares/createRatingRules");
 const updateRatingRules = require("./middlewares/updateRatingRules");
+const authorize = require("../../shared/middlewares/authorize");
 
 const RatingModel = require("./ratings-model");
 
@@ -75,7 +76,7 @@ ratingsRoute.get("/ratings/:id", async (req, res) => {
 });
 
 // POST /ratings — create a new rating
-ratingsRoute.post("/ratings", createRatingRules, async (req, res) => {
+ratingsRoute.post("/ratings", createRatingRules, authorize(["admin"]), async (req, res) => {
   try {
     const newRating = req.body;
     const addedRating = await RatingModel.create({
@@ -97,7 +98,7 @@ ratingsRoute.post("/ratings", createRatingRules, async (req, res) => {
 });
 
 // PUT /ratings/:id — update a rating by ID
-ratingsRoute.put("/ratings/:id", updateRatingRules, async (req, res) => {
+ratingsRoute.put("/ratings/:id", updateRatingRules, authorize(["admin"]), async (req, res) => {
   try {
     const ratingID = req.params.id;
     const newRating = req.body;
@@ -132,7 +133,7 @@ ratingsRoute.put("/ratings/:id", updateRatingRules, async (req, res) => {
 });
 
 // DELETE /ratings/:id — delete a rating by ID
-ratingsRoute.delete("/ratings/:id", async (req, res) => {
+ratingsRoute.delete("/ratings/:id", authorize(["admin"]), async (req, res) => {
   try {
     const ratingID = req.params.id;
     const foundRating = await RatingModel.findById(ratingID);
